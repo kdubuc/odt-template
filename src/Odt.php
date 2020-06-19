@@ -27,8 +27,8 @@ final class Odt extends Zip
         // Default pipeline renderer
         if (empty($pipeline)) {
             $pipeline = [
-                new Tag\Block\Segment(),
-                new Tag\Block\Conditional(),
+                new Tag\Segment(),
+                new Tag\Conditional(),
                 new Tag\Image(),
                 new Tag\Qrcode(),
                 new Tag\Date(),

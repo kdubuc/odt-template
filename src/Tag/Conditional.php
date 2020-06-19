@@ -1,11 +1,11 @@
 <?php
 
-namespace Kdubuc\Odt\Tag\Block;
+namespace Kdubuc\Odt\Tag;
 
 use Kdubuc\Odt\Odt;
 use Adbar\Dot as ArrayDot;
 
-final class Conditional extends Block
+final class Conditional extends Tag
 {
     /*
      * Regex to isolate tag inside Odt content.
