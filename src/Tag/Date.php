@@ -2,6 +2,7 @@
 
 namespace Kdubuc\Odt\Tag;
 
+use Datetime;
 use Kdubuc\Odt\Odt;
 use Adbar\Dot as ArrayDot;
 
@@ -25,7 +26,7 @@ final class Date extends Tag
         $key       = $tag_infos['key'];
 
         // Get timestamp (if possible) and parse locale string
-        $timestamp = (new \Datetime($data->get($key)))->getTimestamp();
+        $timestamp = (new Datetime($data->get($key)))->getTimestamp();
         $date      = explode('|', strftime('%e|%m|%Y', $timestamp));
         $month     = ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'];
         $value     = $date[0].' '.$month[(int) ($date[1])].' '.$date[2];
