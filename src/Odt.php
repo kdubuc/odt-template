@@ -57,7 +57,7 @@ final class Odt extends Zip
         @$xml->loadXML($this->getEntryContents('content.xml'));
         $template = $xml->getElementsByTagName('text')->item(0);
 
-        // Prepare ODT
+        // Keep current odt reference for the rendering process
         $odt = $this;
 
         // Build all document pages
@@ -67,23 +67,23 @@ final class Odt extends Zip
 
             // Duplicate and append new page using page break element if index > 0
             if ($index > 0 && true === $options['page_break']) {
-                $xml->loadXML($this->getEntryContents('content.xml'));
+                $xml->loadXML($odt->getEntryContents('content.xml'));
                 $xml->getElementsByTagName('text')->item(0)->appendChild($xml->importNode($pagebreak, true));
                 foreach ($template->childNodes as $new_page_child_node) {
                     $xml->getElementsByTagName('text')->item(0)->appendChild($xml->importNode($new_page_child_node, true));
                 }
-                $this->addFromString('content.xml', $xml->saveXML());
+                $odt->addFromString('content.xml', $xml->saveXML());
             }
 
             // ODT multiple rendering pass (pipeline process)
             foreach ($pipeline as $rendering_process) {
                 // Catch all tags matches rendering process regex
                 // Isolate rendering action
-                preg_match_all($rendering_process->getRegex(), $this->getEntryContents('content.xml'), $tags_infos, PREG_SET_ORDER);
+                preg_match_all($rendering_process->getRegex(), $odt->getEntryContents('content.xml'), $tags_infos, PREG_SET_ORDER);
 
                 // Apply render process for all tags found
                 foreach ($tags_infos as $tag_info) {
-                    $odt = $rendering_process->render($this, $data, $tag_info);
+                    $odt = $rendering_process->render($odt, $data, $tag_info);
                 }
             }
         }
