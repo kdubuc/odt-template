@@ -36,18 +36,6 @@ final class Odt extends Zip
             ];
         }
 
-        // Initialize and sort pipeline items renderer using priority value.
-        // The blocks have higher priority over the tags, because blocks like
-        // IF or SEGMENT must be processed BEFORE any fields for correct
-        // context assignation.
-        uasort($pipeline, function (Tag\Tag $tag_a, Tag\Tag $tag_b) : int {
-            if ($tag_a->getPriority() == $tag_b->getPriority()) {
-                return 0;
-            }
-
-            return $tag_a->getPriority() > $tag_b->getPriority() ? -1 : 1;
-        });
-
         // Build page break style
         $pagebreak_style = $xml->createElement('style:style');
         $pagebreak_style->setAttribute('style:name', 'pagebreak');
