@@ -10,15 +10,15 @@ final class Conditional extends Tag
     /*
      * Regex to isolate tag inside Odt content.
      */
-    public function getRegex() : string
+    protected function getRegex() : string
     {
         return "/\[IF\s(?'key'[\w.]+)\](?'content'.*?)\[\/IF \k'key'\]/s";
     }
 
     /*
-     * Replace tag with using regex and data variable
+     * Render process : Within odt, edit tag with data bag.
      */
-    public function render(Odt $odt, ArrayDot $data, array $tag_infos) : Odt
+    protected function render(Odt $odt, ArrayDot $data, array $tag_infos) : Odt
     {
         // Get block info from tag
         $block         = preg_quote($tag_infos[0], '/');

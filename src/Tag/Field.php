@@ -10,15 +10,15 @@ final class Field extends Tag
     /*
      * Regex to isolate tag inside Odt content.
      */
-    public function getRegex() : string
+    protected function getRegex() : string
     {
         return "/{field:(?'key'[\w.]+)}/";
     }
 
     /*
-     * Render process using regex and tag informations.
+     * Render process : Within odt, edit tag with data bag.
      */
-    public function render(Odt $odt, ArrayDot $data, array $tag_infos) : Odt
+    protected function render(Odt $odt, ArrayDot $data, array $tag_infos) : Odt
     {
         // Get tag informations
         $tag   = preg_quote($tag_infos[0], '/');

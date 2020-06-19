@@ -64,9 +64,6 @@ final class Odt extends Zip
 
         // Build all document pages
         foreach ($pages as $index => $page) {
-            // Provide an easy access to data with dot notation
-            $data = dot($page);
-
             // Duplicate and append new page using page break element if index > 0
             if ($index > 0 && true === $options['page_break']) {
                 $xml->loadXML($odt->getEntryContents('content.xml'));
@@ -79,14 +76,7 @@ final class Odt extends Zip
 
             // ODT multiple rendering pass (pipeline process)
             foreach ($pipeline as $rendering_process) {
-                // Catch all tags matches rendering process regex
-                // Isolate rendering action
-                preg_match_all($rendering_process->getRegex(), $odt->getEntryContents('content.xml'), $tags_infos, PREG_SET_ORDER);
-
-                // Apply render process for all tags found
-                foreach ($tags_infos as $tag_info) {
-                    $odt = $rendering_process->render($odt, $data, $tag_info);
-                }
+                $odt = $rendering_process->apply($odt, $page);
             }
         }
 
