@@ -2,8 +2,8 @@
 
 namespace Kdubuc\Odt\Tag;
 
-use Kdubuc\Odt\Odt;
 use DOMDocument;
+use Kdubuc\Odt\Odt;
 use BaconQrCode\Writer;
 use Adbar\Dot as ArrayDot;
 use BaconQrCode\Renderer\ImageRenderer;

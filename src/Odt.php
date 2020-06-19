@@ -25,7 +25,7 @@ final class Odt extends Zip
         ], $options);
 
         // Default pipeline renderer
-        // The blocks (like segment and conditional) have higher priority over the simple tags, because they 
+        // The blocks (like segment and conditional) have higher priority over the simple tags, because they
         // must be processed BEFORE any fields for correct context assignation.
         if (empty($pipeline)) {
             $pipeline = [

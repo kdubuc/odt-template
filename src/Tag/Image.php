@@ -2,8 +2,8 @@
 
 namespace Kdubuc\Odt\Tag;
 
-use Kdubuc\Odt\Odt;
 use DOMDocument;
+use Kdubuc\Odt\Odt;
 use Adbar\Dot as ArrayDot;
 use Intervention\Image\ImageManager as Manager;
 use Intervention\Image\Exception\NotReadableException as ImageNotReadableException;
