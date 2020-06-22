@@ -44,7 +44,7 @@ final class Image extends Tag
             $image = $image->encode();
 
             // Add image file to the odt package
-            $image_path = 'Pictures/IMG'.hash('md5', hash_file('md5', $image->basePath()));
+            $image_path = 'Pictures/IMG'.md5($url);
             $odt->addFromString($image_path, $image);
 
             // Update manifest
