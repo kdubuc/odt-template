@@ -32,7 +32,7 @@ final class Segment extends Tag
         $new_block_content = '';
         foreach ($data->get($key) as $row) {
             $odt->addFromString('content.xml', $block_content);
-            $new_block_content .= $odt->render([$row])->getEntryContents('content.xml');
+            $new_block_content .= $odt->render([$row], [], ['page_break' => false])->getEntryContents('content.xml');
         }
 
         // Update odt

@@ -38,26 +38,23 @@ final class Odt extends Zip
             ];
         }
 
-        // Build page break style
-        $pagebreak_style = $xml->createElement('style:style');
-        $pagebreak_style->setAttribute('style:name', 'pagebreak');
-        $pagebreak_style->setAttribute('style:family', 'paragraph');
-        $pagebreak_style_properties = $xml->createElement('style:paragraph-properties');
-        $pagebreak_style_properties->setAttribute('fo:break-before', 'page');
-        $pagebreak_style->appendChild($pagebreak_style_properties);
-
-        // Append the style in the ODT
-        $xml->loadXML($this->getEntryContents('styles.xml'));
-        $xml->getElementsByTagName('styles')->item(0)->appendChild($xml->importNode($pagebreak_style, true));
-        $this->addFromString('styles.xml', $xml->saveHTML());
-
-        // Build page break element for future use
-        $pagebreak = $xml->createElement('text:p');
-        $pagebreak->setAttribute('text:style-name', 'pagebreak');
-
-        // Get template body (disable error reporting)
+        // Load ODT content (disable error reporting)
         @$xml->loadXML($this->getEntryContents('content.xml'));
+
+        // Get template body
         $template = $xml->getElementsByTagName('text')->item(0);
+
+        // Build page break style
+        if(true === $options['page_break']) {
+            $pagebreak_style = $xml->createElement('style:style');
+            $pagebreak_style->setAttribute('style:name', 'pagebreak');
+            $pagebreak_style->setAttribute('style:family', 'paragraph');
+            $pagebreak_style_properties = $xml->createElement('style:paragraph-properties');
+            $pagebreak_style_properties->setAttribute('fo:break-before', 'page');
+            $pagebreak_style->appendChild($pagebreak_style_properties);
+            $xml->getElementsByTagName('automatic-styles')->item(0)->appendChild($pagebreak_style);
+            $this->addFromString('content.xml', $xml->saveXML());
+        }
 
         // Keep current odt reference for the rendering process
         $odt = $this;
@@ -67,6 +64,8 @@ final class Odt extends Zip
             // Duplicate and append new page using page break element if index > 0
             if ($index > 0 && true === $options['page_break']) {
                 $xml->loadXML($odt->getEntryContents('content.xml'));
+                $pagebreak = $xml->createElement('text:p');
+                $pagebreak->setAttribute('text:style-name', 'pagebreak');
                 $xml->getElementsByTagName('text')->item(0)->appendChild($xml->importNode($pagebreak, true));
                 foreach ($template->childNodes as $new_page_child_node) {
                     $xml->getElementsByTagName('text')->item(0)->appendChild($xml->importNode($new_page_child_node, true));
