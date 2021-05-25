@@ -17,7 +17,7 @@ final class Qrcode extends Tag
      */
     protected function getRegex() : string
     {
-        return "/{qrcode:(?'key'[\w.]+)}/";
+        return "/{qrcode:(?'key'[\w.]+),?(?'options'[\w.:,]+)?}/";
     }
 
     /*
@@ -28,10 +28,18 @@ final class Qrcode extends Tag
         // Url to encode in qrcode
         $url = mb_strtolower($data->get($tag_infos['key']));
 
+        // Build QRcode options
+        $options = ['size' => 42, 'margin' => 0];
+        if (\array_key_exists('options', $tag_infos) && !empty($tag_infos['options'])) {
+            foreach(\explode(',', (string) $tag_infos['options']) as $option_pairs) {
+                list($key, $value) = \explode(':', $option_pairs, 2);
+                $options[$key] = $value;
+            }
+        }
+
         // Generate the qrcode
-        $size     = 42;
         $renderer = new ImageRenderer(
-            new RendererStyle($size, 0),
+            new RendererStyle($options['size'], $options['margin']),
             new SvgImageBackEnd()
         );
         $writer = new Writer($renderer);
@@ -56,8 +64,8 @@ final class Qrcode extends Tag
         $xml        = new DOMDocument();
         $draw_frame = $xml->createElement('draw:frame'); // Add frame
         $draw_frame->setAttribute('text:anchor', 'aschar');
-        $draw_frame->setAttribute('svg:width', $size * Image::PIXEL_TO_CM.'cm');
-        $draw_frame->setAttribute('svg:height', $size * Image::PIXEL_TO_CM.'cm');
+        $draw_frame->setAttribute('svg:width', $options['size'] * Image::PIXEL_TO_CM.'cm');
+        $draw_frame->setAttribute('svg:height', $options['size'] * Image::PIXEL_TO_CM.'cm');
         $draw_image = $xml->createElement('draw:image'); // Add image
         $draw_image->setAttribute('xlink:href', $image_path);
         $draw_frame->appendChild($draw_image); // Update frame tag tree
