@@ -26,7 +26,7 @@ final class Qrcode extends Tag
     protected function render(Odt $odt, ArrayDot $data, array $tag_infos) : Odt
     {
         // Url to encode in qrcode
-        $url = mb_strtolower($data->get($tag_infos['key']));
+        $url = $data->get($tag_infos['key']);
 
         // Build QRcode options
         $options = ['size' => 42, 'margin' => 0];
