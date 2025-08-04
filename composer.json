@@ -36,8 +36,8 @@
     },
 
     "scripts": {
-        "code:tests": "docker run --rm $(docker build -q --pull .)",
-        "code:fix-cs": "docker run --rm --volume $PWD:/app --workdir /app php:alpine php vendor/bin/php-cs-fixer fix --config=vendor/kdubuc/php-cs-fixer-rules/php-cs-fixer.php"
+        "code:tests": "vendor/bin/phpunit",
+        "code:fix-cs": "vendor/bin/php-cs-fixer fix --config=vendor/kdubuc/php-cs-fixer-rules/php-cs-fixer.php"
     },
 
     "prefer-stable": true,
