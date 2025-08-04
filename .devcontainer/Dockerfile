@@ -15,11 +15,11 @@ RUN apt-get update \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-# Launch tests suite
-CMD php vendor/bin/phpunit tests/
+# Installation de git
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends git \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-# Base dir
-WORKDIR /usr/src
-COPY vendor vendor
-COPY src src
-COPY tests tests
+# Installation de composer
+COPY --from=composer /usr/bin/composer /usr/bin/composer
