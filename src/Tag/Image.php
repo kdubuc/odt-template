@@ -2,7 +2,6 @@
 
 namespace Kdubuc\Odt\Tag;
 
-use DOMDocument;
 use Kdubuc\Odt\Odt;
 use Adbar\Dot as ArrayDot;
 use Intervention\Image\ImageManager as Manager;
@@ -48,7 +47,7 @@ final class Image extends Tag
             $odt->addFromString($image_path, $image);
 
             // Update manifest
-            $xml = new DOMDocument();
+            $xml = new \DOMDocument();
             $xml->loadXML($odt->getEntryContents('META-INF/manifest.xml'));
             $new_entry = $xml->createElement('manifest:file-entry');
             $new_entry->setAttribute('manifest:media-type', $mime);
@@ -59,7 +58,7 @@ final class Image extends Tag
             // Update content.xml
             $tag        = preg_quote($tag_infos[0], '/');
             $content    = $odt->getEntryContents('content.xml');
-            $xml        = new DOMDocument();
+            $xml        = new \DOMDocument();
             $draw_frame = $xml->createElement('draw:frame'); // Add frame
             $draw_frame->setAttribute('text:anchor', 'aschar');
             $draw_frame->setAttribute('svg:width', "{$width}cm");

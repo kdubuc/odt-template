@@ -2,7 +2,6 @@
 
 namespace Kdubuc\Odt;
 
-use DOMDocument;
 use PhpZip\ZipFile as Zip;
 
 /*
@@ -17,7 +16,7 @@ final class Odt extends Zip
     public function render(array $pages, array $pipeline = [], array $options = []) : self
     {
         // Init XML I/O
-        $xml = new DOMDocument();
+        $xml = new \DOMDocument();
 
         // Init options array with defaults values
         $options = array_merge([
@@ -35,6 +34,7 @@ final class Odt extends Zip
                 new Tag\Qrcode(),
                 new Tag\Date(),
                 new Tag\Field(),
+                new Tag\Markdown(),
             ];
         }
 
@@ -45,7 +45,7 @@ final class Odt extends Zip
         $template = $xml->getElementsByTagName('text')->item(0);
 
         // Build page break style
-        if(true === $options['page_break']) {
+        if (true === $options['page_break']) {
             $pagebreak_style = $xml->createElement('style:style');
             $pagebreak_style->setAttribute('style:name', 'pagebreak');
             $pagebreak_style->setAttribute('style:family', 'paragraph');

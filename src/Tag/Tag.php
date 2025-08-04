@@ -26,7 +26,7 @@ abstract class Tag
         $data = dot($data);
 
         // Catch all string matches tag's regex to isolate rendering action
-        preg_match_all($this->getRegex(), $odt->getEntryContents('content.xml'), $tags_infos, PREG_SET_ORDER);
+        preg_match_all($this->getRegex(), $odt->getEntryContents('content.xml'), $tags_infos, \PREG_SET_ORDER);
 
         // Apply render process for all tags found
         foreach ($tags_infos as $tag_info) {

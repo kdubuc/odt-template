@@ -2,7 +2,6 @@
 
 namespace Kdubuc\Odt\Tag;
 
-use DOMDocument;
 use Kdubuc\Odt\Odt;
 use BaconQrCode\Writer;
 use Adbar\Dot as ArrayDot;
@@ -31,8 +30,8 @@ final class Qrcode extends Tag
         // Build QRcode options
         $options = ['size' => 42, 'margin' => 0];
         if (\array_key_exists('options', $tag_infos) && !empty($tag_infos['options'])) {
-            foreach(\explode(',', (string) $tag_infos['options']) as $option_pairs) {
-                list($key, $value) = \explode(':', $option_pairs, 2);
+            foreach (explode(',', (string) $tag_infos['options']) as $option_pairs) {
+                [$key, $value] = explode(':', $option_pairs, 2);
                 $options[$key] = $value;
             }
         }
@@ -50,7 +49,7 @@ final class Qrcode extends Tag
         $odt->addFromString($image_path, $qrcode);
 
         // Update manifest
-        $xml = new DOMDocument();
+        $xml = new \DOMDocument();
         $xml->loadXML($odt->getEntryContents('META-INF/manifest.xml'));
         $new_entry = $xml->createElement('manifest:file-entry');
         $new_entry->setAttribute('manifest:media-type', 'image/svg+xml');
@@ -61,7 +60,7 @@ final class Qrcode extends Tag
         // Update content.xml
         $tag        = preg_quote($tag_infos[0], '/');
         $content    = $odt->getEntryContents('content.xml');
-        $xml        = new DOMDocument();
+        $xml        = new \DOMDocument();
         $draw_frame = $xml->createElement('draw:frame'); // Add frame
         $draw_frame->setAttribute('text:anchor', 'aschar');
         $draw_frame->setAttribute('svg:width', $options['size'] * Image::PIXEL_TO_CM.'cm');

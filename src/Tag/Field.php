@@ -23,7 +23,7 @@ final class Field extends Tag
         // Get tag informations
         $tag   = preg_quote($tag_infos[0], '/');
         $key   = $tag_infos['key'];
-        $value = is_scalar($data->get($key)) ? htmlspecialchars($data->get($key)) : '';
+        $value = \is_scalar($data->get($key)) ? htmlspecialchars($data->get($key)) : '';
 
         // Update content.xml
         $content = $odt->getEntryContents('content.xml');
