@@ -34,7 +34,6 @@ final class Odt extends Zip
                 new Tag\Qrcode(),
                 new Tag\Date(),
                 new Tag\Field(),
-                new Tag\Markdown(),
             ];
         }
 
