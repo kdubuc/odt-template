@@ -21,7 +21,8 @@
         "adbario/php-dot-notation": "^2.0",
         "intervention/image": "^2.0",
         "bacon/bacon-qr-code": "^2.0",
-        "nelexa/zip": "^3.0"
+        "nelexa/zip": "^3.0",
+        "league/commonmark": "^2.7"
     },
 
     "require-dev": {

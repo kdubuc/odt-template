@@ -74,6 +74,15 @@ Options :
 - size : QrCode size in pixel
 - margin : Margin in pixel applied to QrCode
 
+##### Markdown
+
+The Markdown Tag allows rendering Markdown content.
+
+Usage :
+```
+{md:key}
+```
+
 ## Testing
 
 ``` bash
