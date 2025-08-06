@@ -13,7 +13,7 @@ final class Markdown extends Tag
      */
     protected function getRegex() : string
     {
-        return "/(<text[^>]*>){md:(?'key'[\w.]+)}(<\/text[^>]*>)/s";
+        return "/{md:(?'key'[\w.]+)}/s";
     }
 
     /*
@@ -22,7 +22,7 @@ final class Markdown extends Tag
     protected function render(Odt $odt, ArrayDot $data, array $tag_infos) : Odt
     {
         // Get tag informations
-        $tag   = preg_quote($tag_infos[0], '/');
+        $raw   = $tag_infos[0];
         $key   = $tag_infos['key'];
         $value = \is_scalar($data->get($key)) ? htmlspecialchars($data->get($key)) : '';
 
@@ -31,7 +31,35 @@ final class Markdown extends Tag
 
         // Update content.xml
         $content = $odt->getEntryContents('content.xml');
-        $odt->addFromString('content.xml', preg_replace("/$tag/", $value, $content));
+
+        // Suppress XML errors for invalid HTML because we are going to manipulate some unknown namespaces
+        // This is necessary because the Markdown content may contain HTML tags that are not valid in ODT XML
+        // and we want to avoid warnings or errors when loading the XML.
+        libxml_use_internal_errors(true);
+
+        // Load the content as a DOMDocument
+        $dom = new \DOMDocument();
+        $dom->loadXML($content);
+
+        // Find the node containing the tag
+        $xpath = new \DOMXPath($dom);
+        $nodes = $xpath->query("//*[text() = '$raw']");
+        if (0 === $nodes->length) {
+            throw new \RuntimeException("Tag '$raw' not found in content.xml");
+        }
+
+        // Iterate over all nodes that match the tag
+        // and replace them with the converted Markdown content
+        foreach ($nodes as $node) {
+            // Create a fragment from the Markdown-converted XML
+            $fragment = $dom->createDocumentFragment();
+            $fragment->appendXML($value);
+            // Replace the entire node (parent tag) with the fragment
+            $node->parentNode->replaceChild($fragment, $node);
+        }
+
+        // Add the modified content back to the ODT
+        $odt->addFromString('content.xml', $dom->saveXML());
 
         return $odt;
     }
