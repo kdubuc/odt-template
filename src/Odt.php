@@ -81,4 +81,44 @@ final class Odt extends Zip
 
         return $odt;
     }
+
+    /**
+     * Replace a tag with a value in the ODT content.
+     *
+     * @param string $tag   tag name to replace
+     * @param string $value value to replace the tag with
+     */
+    public function replace(string $tag, string $value) : void
+    {
+        $content = $this->getEntryContents('content.xml');
+
+        // Suppress XML errors for invalid HTML because we are going to manipulate some unknown namespaces
+        // This is necessary because the value content may contain HTML tags that are not valid in ODT XML
+        // and we want to avoid warnings or errors when loading the XML.
+        libxml_use_internal_errors(true);
+
+        // Load the content as a DOMDocument
+        $dom = new \DOMDocument();
+        $dom->loadXML($content);
+
+        // Find the node containing the tag
+        $xpath = new \DOMXPath($dom);
+        $nodes = $xpath->query("//*[text() = '$tag']");
+        if (0 === $nodes->length) {
+            throw new \RuntimeException("Tag '$tag' not found in content.xml");
+        }
+
+        // Iterate over all nodes that match the tag
+        // and replace them with the converted Markdown content
+        foreach ($nodes as $node) {
+            // Create a fragment from the input XML value
+            $fragment = $dom->createDocumentFragment();
+            $fragment->appendXML($value);
+            // Replace the entire node (parent tag) with the fragment
+            $node->parentNode->replaceChild($fragment, $node);
+        }
+
+        // Add the modified content back to the ODT
+        $this->addFromString('content.xml', $dom->saveXML());
+    }
 }
