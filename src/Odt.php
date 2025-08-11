@@ -109,7 +109,7 @@ final class Odt extends Zip
         }
 
         // Iterate over all nodes that match the tag
-        // and replace them with the converted Markdown content
+        // and replace them with the converted xml content
         foreach ($nodes as $node) {
             // Create a fragment from the input XML value
             $fragment = $dom->createDocumentFragment();
