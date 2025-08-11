@@ -29,6 +29,7 @@ final class Odt extends Zip
         if (empty($pipeline)) {
             $pipeline = [
                 new Tag\Segment(),
+                new Tag\Table(),
                 new Tag\Conditional(),
                 new Tag\Image(),
                 new Tag\Qrcode(),

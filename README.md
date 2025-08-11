@@ -83,6 +83,18 @@ Usage :
 {md:key}
 ```
 
+##### Table
+The Simple Table Tag allows rendering a table by duplicating each table row in the document.
+The field must be an array of associative arrays, where each associative array represents a row in the table.
+The last row of the table must be the template row, which will be duplicated for each row in the data set.
+
+Usage :
+```
+[TABLE key]
+(...table...)
+[/TABLE key]
+```
+
 ## Testing
 
 ``` bash

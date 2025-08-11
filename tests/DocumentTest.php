@@ -21,6 +21,10 @@ class DocumentTest extends TestCase
                 'image_url' => __DIR__.'/placeholder_150.png',
                 'test_date' => '1988-08-14',
                 'markdown_content' => '# Hello World!',
+                'test_table' => [
+                    ['foo' => 'foo1', 'bar' => 'bar1'],
+                    ['foo' => 'foo2', 'bar' => 'bar2'],
+                ],
             ],
 
             // Page 2
