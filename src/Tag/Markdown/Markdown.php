@@ -24,7 +24,7 @@ final class Markdown extends Tag
         // Get tag informations
         $raw   = $tag_infos[0];
         $key   = $tag_infos['key'];
-        $value = \is_scalar($data->get($key)) ? htmlspecialchars($data->get($key)) : '';
+        $value = $data->get($key);
 
         // Convert Markdown to HTML
         $value = $this->convertMarkdownToOdt($value);
