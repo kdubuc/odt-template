@@ -15,8 +15,8 @@ return [
         'test_date' => '1988-08-14',
         'markdown_content' => trim(<<<MD
             # Hello World!
-            ![alt text](https://placehold.co/600x400/EEE/31343C "Title")
-        MD),
+            ![alt text](https://metarisc-bucket.s3.fr-par.scw.cloud/sdis62.png "Title")
+            MD),
         'test_table' => [
             ['foo' => 'foo1', 'bar' => 'bar1'],
             ['foo' => 'foo2', 'bar' => 'bar2'],

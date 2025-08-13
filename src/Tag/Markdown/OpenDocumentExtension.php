@@ -2,6 +2,7 @@
 
 namespace Kdubuc\Odt\Tag\Markdown;
 
+use Kdubuc\Odt\Odt;
 use League\CommonMark\Node\Node;
 use League\CommonMark\Node\Inline\Text;
 use League\CommonMark\Node\Block\Document;
@@ -9,6 +10,7 @@ use League\CommonMark\Node\Block\Paragraph;
 use League\CommonMark\Extension\ExtensionInterface;
 use League\CommonMark\Renderer\NodeRendererInterface;
 use League\CommonMark\Renderer\ChildNodeRendererInterface;
+use League\CommonMark\Extension\CommonMark\Node\Inline\Image;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Strong;
@@ -17,6 +19,14 @@ use League\CommonMark\Extension\CommonMark\Node\Block\ListBlock;
 
 class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
 {
+    private Odt $odt;
+
+    public function __construct(
+        Odt $odt
+    ) {
+        $this->odt = $odt;
+    }
+
     public function register(EnvironmentBuilderInterface $environment) : void
     {
         $environment->addRenderer(Paragraph::class, $this);
@@ -26,6 +36,7 @@ class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
         $environment->addRenderer(Text::class, $this);
         $environment->addRenderer(Document::class, $this);
         $environment->addRenderer(Strong::class, $this);
+        $environment->addRenderer(Image::class, $this);
     }
 
     public function render(Node $node, ChildNodeRendererInterface $childRenderer)
@@ -60,6 +71,21 @@ class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
         // Style Gras
         if ($node instanceof Strong) {
             return '<text:span text:style-name="T1">'.$childRenderer->renderNodes($node->children()).'</text:span>';
+        }
+
+        // Image
+        if ($node instanceof Image) {
+            $src    = htmlspecialchars($node->getUrl(), \ENT_XML1 | \ENT_COMPAT, 'UTF-8');
+            $alt    = htmlspecialchars($node->getTitle(), \ENT_XML1 | \ENT_COMPAT, 'UTF-8');
+            $image  = (new \Intervention\Image\ImageManager(['driver' => 'imagick']))->make($src)->encode();
+            $width  = $image->width() * \Kdubuc\Odt\Tag\Image::PIXEL_TO_CM;
+            $height = $image->height() * \Kdubuc\Odt\Tag\Image::PIXEL_TO_CM;
+
+            $path = $this->odt->addImageToManifest($image);
+
+            return '<draw:frame text:anchor="aschar" svg:width="'.$width.'cm" svg:height="'.$height.'cm">
+                        <draw:image xlink:href="'.$path.'" xlink:title="'.$alt.'"/>
+                    </draw:frame>';
         }
 
         return $childRenderer->renderNodes($node->children());

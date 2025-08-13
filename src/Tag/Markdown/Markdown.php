@@ -27,7 +27,7 @@ final class Markdown extends Tag
         $value = $data->get($key);
 
         // Convert Markdown to HTML
-        $value = $this->convertMarkdownToOdt($value);
+        $value = $this->convertMarkdownToOdt($odt, $value);
 
         // Add the modified content back to the ODT
         $odt->replace($raw, $value);
@@ -38,11 +38,11 @@ final class Markdown extends Tag
     /*
      * Convert Markdown to ODT format.
      */
-    private function convertMarkdownToOdt(string $markdown) : string
+    private function convertMarkdownToOdt(Odt $odt, string $markdown) : string
     {
         $environment = new \League\CommonMark\Environment\Environment();
 
-        $environment->addExtension(new OpenDocumentExtension());
+        $environment->addExtension(new OpenDocumentExtension($odt));
         $environment->addExtension(new \League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension());
 
         $converter = new \League\CommonMark\MarkdownConverter($environment);
