@@ -132,7 +132,7 @@ final class Odt extends Zip
         $mime = $image->mime();
 
         // Generate unique filename for the image
-        $id = 'IMG'.md5($image->encoded);
+        $id = 'IMG'.md5($image->basename.$image->filename.$image->extension);
 
         // Add image file to the odt package
         $image_path = 'Pictures/'.$id;
