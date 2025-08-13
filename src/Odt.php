@@ -122,4 +122,32 @@ final class Odt extends Zip
         // Add the modified content back to the ODT
         $this->addFromString('content.xml', $dom->saveXML());
     }
+
+    /**
+     * Add an image to the ODT manifest and return its path.
+     */
+    public function addImageToManifest(\Intervention\Image\Image $image) : string
+    {
+        // Get mime type
+        $mime = $image->mime();
+
+        // Generate unique filename for the image
+        $id = 'IMG'.md5($image->encoded);
+
+        // Add image file to the odt package
+        $image_path = 'Pictures/'.$id;
+        $this->addFromString($image_path, $image);
+
+        // Update manifest
+        $xml = new \DOMDocument();
+        $xml->loadXML($this->getEntryContents('META-INF/manifest.xml'));
+        $new_entry = $xml->createElement('manifest:file-entry');
+        $new_entry->setAttribute('manifest:media-type', $mime);
+        $new_entry->setAttribute('manifest:full-path', $image_path);
+        $xml->getElementsByTagName('manifest')->item(0)->appendChild($new_entry);
+        $this->addFromString('META-INF/manifest.xml', $xml->saveXML());
+
+        // Return the image path
+        return $image_path;
+    }
 }

@@ -32,9 +32,6 @@ final class Image extends Tag
             // Get image from the url given (local, remote ...)
             $image = (new Manager(['driver' => 'imagick']))->make($url);
 
-            // Get mime type
-            $mime = $image->mime();
-
             // Get image size
             $width  = $image->width() * self::PIXEL_TO_CM;
             $height = $image->height() * self::PIXEL_TO_CM;
@@ -42,18 +39,8 @@ final class Image extends Tag
             // Generate image
             $image = $image->encode();
 
-            // Add image file to the odt package
-            $image_path = 'Pictures/IMG'.md5($url);
-            $odt->addFromString($image_path, $image);
-
-            // Update manifest
-            $xml = new \DOMDocument();
-            $xml->loadXML($odt->getEntryContents('META-INF/manifest.xml'));
-            $new_entry = $xml->createElement('manifest:file-entry');
-            $new_entry->setAttribute('manifest:media-type', $mime);
-            $new_entry->setAttribute('manifest:full-path', $image_path);
-            $xml->getElementsByTagName('manifest')->item(0)->appendChild($new_entry);
-            $odt->addFromString('META-INF/manifest.xml', $xml->saveXML());
+            // Add image to manifest
+            $image_path = $odt->addImageToManifest($image);
 
             // Update content.xml
             $tag        = preg_quote($tag_infos[0], '/');
