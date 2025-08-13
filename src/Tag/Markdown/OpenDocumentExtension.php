@@ -15,7 +15,9 @@ use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\CommonMark\Node\Block\Heading;
 use League\CommonMark\Extension\CommonMark\Node\Inline\Strong;
 use League\CommonMark\Extension\CommonMark\Node\Block\ListItem;
+use League\CommonMark\Extension\CommonMark\Node\Block\HtmlBlock;
 use League\CommonMark\Extension\CommonMark\Node\Block\ListBlock;
+use League\CommonMark\Extension\CommonMark\Node\Inline\HtmlInline;
 
 class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
 {
@@ -37,6 +39,8 @@ class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
         $environment->addRenderer(Document::class, $this);
         $environment->addRenderer(Strong::class, $this);
         $environment->addRenderer(Image::class, $this);
+        $environment->addRenderer(HtmlBlock::class, $this);
+        $environment->addRenderer(HtmlInline::class, $this);
     }
 
     public function render(Node $node, ChildNodeRendererInterface $childRenderer)
@@ -86,6 +90,53 @@ class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
             return '<draw:frame text:anchor="aschar" svg:width="'.$width.'cm" svg:height="'.$height.'cm">
                         <draw:image xlink:href="'.$path.'" xlink:title="'.$alt.'"/>
                     </draw:frame>';
+        }
+
+        // HTML Image
+        if ($node instanceof HtmlInline || $node instanceof HtmlBlock) {
+            // Get the HTML content
+            $htmlContent = $node->getLiteral();
+
+            // Load HTML content (wrap in body to ensure proper parsing)
+            $dom = new \DOMDocument();
+            libxml_use_internal_errors(true);
+            $dom->loadHTML('<?xml encoding="UTF-8"><body>'.$htmlContent.'</body>', \LIBXML_HTML_NOIMPLIED | \LIBXML_HTML_NODEFDTD);
+            libxml_clear_errors();
+
+            // Get the first element
+            $xpath    = new \DOMXPath($dom);
+            $elements = $xpath->query('//body/*');
+
+            // Get the first element and its tag name
+            $element = $elements->item(0);
+
+            // Check if the element is an image
+            if ($element && 'img' === mb_strtolower($element->nodeName) && $element instanceof \DOMElement) {
+                $src   = $element->getAttribute('src');
+                $alt   = $element->getAttribute('alt');
+                $title = $element->getAttribute('title');
+
+                // Process image similar to markdown Image node
+                if ($src) {
+                    $image  = (new \Intervention\Image\ImageManager(['driver' => 'imagick']))->make($src)->encode();
+                    $width  = ($element->getAttribute('width') ?? $image->width()) * \Kdubuc\Odt\Tag\Image::PIXEL_TO_CM;
+                    $height = ($element->getAttribute('height') ?? $image->height()) * \Kdubuc\Odt\Tag\Image::PIXEL_TO_CM;
+                    $path   = $this->odt->addImageToManifest($image);
+
+                    if ($node instanceof HtmlBlock) {
+                        // If it's a block, wrap in a <text:p> tag
+                        return '<text:p>
+                                    <draw:frame text:anchor="aschar" svg:width="'.$width.'cm" svg:height="'.$height.'cm">
+                                        <draw:image xlink:href="'.$path.'" xlink:title="'.htmlspecialchars($alt ?: $title, \ENT_XML1 | \ENT_COMPAT, 'UTF-8').'"/>
+                                    </draw:frame>
+                                </text:p>';
+                    }
+
+                    return '<draw:frame text:anchor="aschar" svg:width="'.$width.'cm" svg:height="'.$height.'cm">
+                                <draw:image xlink:href="'.$path.'" xlink:title="'.htmlspecialchars($alt ?: $title, \ENT_XML1 | \ENT_COMPAT, 'UTF-8').'"/>
+                            </draw:frame>';
+                }
+            }
         }
 
         return $childRenderer->renderNodes($node->children());

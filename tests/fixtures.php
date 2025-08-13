@@ -16,6 +16,9 @@ return [
         'markdown_content' => trim(<<<MD
             # Hello World!
             ![alt text](https://metarisc-bucket.s3.fr-par.scw.cloud/sdis62.png "Title")
+            BOOM
+
+            <img src="https://metarisc-bucket.s3.fr-par.scw.cloud/bmpm.png" alt="Placeholder Image" title="Title" width="50px" height="50px" />
             MD),
         'test_table' => [
             ['foo' => 'foo1', 'bar' => 'bar1'],
