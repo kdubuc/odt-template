@@ -79,7 +79,7 @@ class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
 
         // Image
         if ($node instanceof Image) {
-            $src    = htmlspecialchars($node->getUrl(), \ENT_XML1 | \ENT_COMPAT, 'UTF-8');
+            $src    = html_entity_decode($node->getUrl());
             $alt    = htmlspecialchars($node->getTitle(), \ENT_XML1 | \ENT_COMPAT, 'UTF-8');
             $image  = (new \Intervention\Image\ImageManager(['driver' => 'imagick']))->make($src)->encode();
             $width  = $image->width() * \Kdubuc\Odt\Tag\Image::PIXEL_TO_CM;
@@ -112,7 +112,7 @@ class OpenDocumentExtension implements NodeRendererInterface, ExtensionInterface
 
             // Check if the element is an image
             if ($element && 'img' === mb_strtolower($element->nodeName) && $element instanceof \DOMElement) {
-                $src   = $element->getAttribute('src');
+                $src   = html_entity_decode($element->getAttribute('src'));
                 $alt   = $element->getAttribute('alt');
                 $title = $element->getAttribute('title');
 
